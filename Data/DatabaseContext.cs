@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ToDo.Data;
 
-public class DatabaseContext(DbContextOptions<DatabaseContext> options) : IdentityDbContext<User, Role, Guid>(options)
+public class DatabaseContext(
+    DbContextOptions<DatabaseContext> options)
+    : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(
+        options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
