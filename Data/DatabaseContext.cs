@@ -8,6 +8,10 @@ public class DatabaseContext(
     : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(
         options)
 {
+    public DbSet<ToDo> ToDos { get; set; } = default!;
+
+    public DbSet<ToDoItem> ToDoItems { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -46,5 +50,40 @@ public class DatabaseContext(
         {
             options.ToTable("UserRoles");
         });
+
+        builder.Entity<ToDo>(options =>
+        {
+        });
+
+        builder.Entity<ToDoItem>(options =>
+        {
+        });
+    }
+
+    private static void OnModelCreatingCustom(ModelBuilder builder)
+    {
+        foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()))
+        {
+            if (type is IKeyedModel)
+            {
+                builder.Entity(type, options =>
+                {
+                    options.HasKey(nameof(IKeyedModel.Id))
+                        .IsClustered(false);
+                });
+            }
+            if (type is IDatedModel)
+            {
+                builder.Entity(type, options =>
+                {
+                    // Default clustered index
+                    options.HasIndex(nameof(IDatedModel.CreateDate))
+                        .IsClustered(true)
+                        .IsDescending();
+
+                    options.HasIndex(nameof(IDatedModel.ModifyDate));
+                });
+            }
+        }
     }
 }

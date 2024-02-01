@@ -1,2 +1,3 @@
 * Remove unused endpoints such as /auth
-* LEFT OFF => I'll need to make the form fields fluid
+* I feel like adding a table to track ToDo priorities might be nice
+* LEFT OFF => Continue configuring the custom model creating functionality
