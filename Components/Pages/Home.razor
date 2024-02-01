@@ -1,12 +1,26 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>ToDo</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         
     </Authorized>
     <NotAuthorized>
-        <LoginForm />
+        <div class="row align-items-center text-center vh-100">
+            <div class="row">
+                <div class="col-md-5">
+                    <h1>Log in</h1>
+                    <LoginForm />
+                </div>
+
+                <div class="col-md-2"></div>
+
+                <div class="col-md-5">
+                    <h1>Create Account</h1>
+                    <RegisterForm />
+                </div>
+            </div>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
