@@ -63,17 +63,6 @@ public class DatabaseContext(
                 .WithOne(toDoItem => toDoItem.ToDo)
                 .HasForeignKey(toDoItem => toDoItem.ToDoId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            options.Property(toDo => toDo.Title)
-                .IsRequired()
-                .HasMaxLength(Constants.ToDoTitleMaxLength);
-        });
-
-        builder.Entity<ToDoItem>(options =>
-        {
-            options.Property(toDoItem => toDoItem.Description)
-                .IsRequired()
-                .HasMaxLength(Constants.ToDoItemDesciptionMaxLength);
         });
     }
 

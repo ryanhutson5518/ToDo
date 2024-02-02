@@ -1,4 +1,6 @@
-﻿namespace ToDo.Data;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ToDo.Data;
 
 public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatus
 {
@@ -10,6 +12,8 @@ public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatus
 
     public ToDoStatus Status { get; set; }
 
+    [Required]
+    [MaxLength(100)]
     public string Title { get; set; } = string.Empty;
 
     public virtual List<ToDoItem> ToDoItems { get; set; } = [];

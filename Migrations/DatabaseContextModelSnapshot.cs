@@ -112,7 +112,7 @@ namespace ToDo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ToDos");
+                    b.ToTable("ToDos", (string)null);
                 });
 
             modelBuilder.Entity("ToDo.Data.ToDoItem", b =>
@@ -153,7 +153,7 @@ namespace ToDo.Migrations
 
                     b.HasIndex("ToDoId");
 
-                    b.ToTable("ToDoItems");
+                    b.ToTable("ToDoItems", (string)null);
                 });
 
             modelBuilder.Entity("ToDo.Data.User", b =>
