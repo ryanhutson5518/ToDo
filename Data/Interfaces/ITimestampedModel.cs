@@ -1,6 +1,6 @@
 ﻿namespace ToDo.Data;
 
-public interface IDatedModel
+public interface ITimestampedModel
 {
     DateTimeOffset CreateDate { get; set; }
 
