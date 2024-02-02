@@ -20,6 +20,11 @@ public class DatabaseContext(
         builder.Entity<User>(options =>
         {
             options.ToTable("Users");
+
+            options.HasMany(user => user.ToDos)
+                .WithOne(toDo => toDo.User)
+                .HasForeignKey(toDo => toDo.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<Role>(options =>

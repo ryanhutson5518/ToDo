@@ -1,0 +1,20 @@
+﻿@inject DatabaseContext DatabaseContext
+
+<EditForm Model="Model" method="post" OnValidSubmit="SubmitAsync" FormName="UpdateToDo" Enhance>
+    <DataAnnotationsValidator />
+    <div class="form-floating mb-3">
+        <InputText @bind-Value="Model.Title" class="form-control" aria-required="true" placeholder="title" />
+        <label for="title" class="form-label">Title</label>
+        <ValidationMessage For="() => Model.Title" class="text-danger" />
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public ToDo Model { get; set; } = new();
+
+    private async Task SubmitAsync()
+    {
+        
+    }
+}

@@ -1,0 +1,40 @@
+﻿@attribute [StreamRendering]
+
+@inject DatabaseContext DatabaseContext
+
+<div class="row">
+    @if (toDos == null)
+    {
+        // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
+    }
+    else if (toDos.Any())
+    {
+        foreach (var toDo in toDos)
+        {
+            <ToDoForm Model="toDo" />
+        }
+    }
+    else
+    {
+        <ToDoForm Model="new()" />
+    }
+</div>
+
+@code {
+    private List<ToDo>? toDos = null;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = HttpContext.GetRequiredUserId();
+
+        toDos = await DatabaseContext.ToDos
+            .AsNoTracking()
+            .Include(t => t.ToDoItems.OrderByDescending(i => i.CreateDate))
+            .Where(t => t.UserId == userId)
+            .OrderByDescending(t => t.CreateDate)
+            .ToListAsync();
+    }
+}
