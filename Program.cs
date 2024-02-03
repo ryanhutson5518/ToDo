@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ToDo.Components;
-using ToDo.Components.Account;
-using ToDo.Data;
-using ToDo.Endpoints;
+using WebApp.Components;
+using WebApp.Components.Account;
+using WebApp.Data;
+using WebApp.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 

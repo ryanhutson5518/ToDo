@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
-using ToDo.Components.Home;
-using ToDo.Data;
+using WebApp.Components.Home;
+using WebApp.Data;
 
-namespace ToDo.Endpoints;
+namespace WebApp.Endpoints;
 
 public class GetToDoEditForm : IEndpoint
 {

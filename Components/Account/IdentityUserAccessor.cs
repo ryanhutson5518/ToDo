@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
-using ToDo.Data;
+using WebApp.Data;
 
-namespace ToDo.Components.Account
+namespace WebApp.Components.Account
 {
     internal sealed class IdentityUserAccessor(UserManager<User> userManager, IdentityRedirectManager redirectManager)
     {

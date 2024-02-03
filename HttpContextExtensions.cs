@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace ToDo;
+namespace WebApp;
 
 public static class HttpContextExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace ToDo;
+﻿namespace WebApp;
 
 public static class Constants
 {

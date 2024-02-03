@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ToDo.Data;
+namespace WebApp.Data;
 
 public class DatabaseContext(
     DbContextOptions<DatabaseContext> options)

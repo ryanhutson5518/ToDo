@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ToDo.Migrations
+namespace WebApp.Migrations
 {
     /// <inheritdoc />
     public partial class Identity_Tables : Migration

@@ -1,4 +1,4 @@
-﻿namespace ToDo.Endpoints;
+﻿namespace WebApp.Endpoints;
 
 public interface IEndpoint
 {

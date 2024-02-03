@@ -1,27 +1,27 @@
 ﻿<!-- Trigger modal -->
-@Trigger(Props)
+@Trigger(Config)
 
 <!-- Modal -->
-<div class="modal fade" id="@Props.Id" tabindex="-1" aria-labelledby="title_@Props.Id" aria-hidden="true">
+<div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="title_@Config.Id" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 @if (ModalTitle is not null)
                 {
-                    @ModalTitle(Props)
+                    @ModalTitle(Config)
                 }
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             @if (ModalBody is not null)
             {
                 <div class="modal-body">
-                    @ModalBody(Props)
+                    @ModalBody(Config)
                 </div>
             }
             @if (ModalFooter is not null)
             {
                 <div class="modal-footer">
-                    @ModalFooter(Props)
+                    @ModalFooter(Config)
                 </div>
             }
         </div>
@@ -31,25 +31,25 @@
 @code {
     [Parameter]
     [EditorRequired]
-    public ModalProps Props { get; set; } = new()
+    public ModalConfig Config { get; set; } = new()
     {
         Id = "Modal"
     };
 
     [Parameter]
     [EditorRequired]
-    public RenderFragment<ModalProps> Trigger { get; set; } = default!;
+    public RenderFragment<ModalConfig> Trigger { get; set; } = default!;
 
     [Parameter]
-    public RenderFragment<ModalProps>? ModalTitle { get; set; }
+    public RenderFragment<ModalConfig>? ModalTitle { get; set; }
 
     [Parameter]
-    public RenderFragment<ModalProps>? ModalBody { get; set; }
+    public RenderFragment<ModalConfig>? ModalBody { get; set; }
 
     [Parameter]
-    public RenderFragment<ModalProps>? ModalFooter { get; set; }
+    public RenderFragment<ModalConfig>? ModalFooter { get; set; }
 
-    public class ModalProps
+    public class ModalConfig
     {
         public required string Id { get; set; } = string.Empty;
     }

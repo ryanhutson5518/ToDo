@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ToDo.Data;
+namespace WebApp.Data;
 
 public class UserRole : IdentityUserRole<Guid>
 {

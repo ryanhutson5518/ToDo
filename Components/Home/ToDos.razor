@@ -3,7 +3,7 @@
 @inject DatabaseContext DatabaseContext
 
 <div class="row">
-    <Modal Props="createNewToDoModalProps">
+    <Modal Config="createNewModalConfig">
         <Trigger>
             <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
                 Create New ToDo
@@ -40,7 +40,7 @@ else if (toDos.Any())
 @code {
     private List<ToDo>? toDos = null;
 
-    private ToDo.Components.Shared.Modal.ModalProps createNewToDoModalProps = new()
+    private ModalConfig createNewModalConfig = new()
     {
         Id = "CreateNewToDoModal"
     };

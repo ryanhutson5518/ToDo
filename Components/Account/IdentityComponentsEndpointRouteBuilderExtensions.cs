@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Security.Claims;
 using System.Text.Json;
-using ToDo.Components.Account.Pages;
-using ToDo.Components.Account.Pages.Manage;
-using ToDo.Data;
+using WebApp.Components.Account.Pages;
+using WebApp.Components.Account.Pages.Manage;
+using WebApp.Data;
 
 namespace Microsoft.AspNetCore.Routing
 {

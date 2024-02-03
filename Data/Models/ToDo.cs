@@ -1,4 +1,4 @@
-﻿namespace ToDo.Data;
+﻿namespace WebApp.Data;
 
 public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatusModel
 {
