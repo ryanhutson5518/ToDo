@@ -3,7 +3,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="title_@Config.Id" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 @if (ModalTitle is not null)
@@ -30,7 +30,6 @@
 
 @code {
     [Parameter]
-    [EditorRequired]
     public ModalConfig Config { get; set; } = new()
     {
         Id = "Modal"

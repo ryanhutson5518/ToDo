@@ -1,0 +1,87 @@
+﻿@inject DatabaseContext DatabaseContext
+
+<EditForm Enhance Model="Input" method="post" OnValidSubmit="OnValidSubmitAsync" FormName="@modalConfig.Id">
+    <DataAnnotationsValidator />
+     <Modal Config="modalConfig" Context="modalContext">
+         <Trigger>
+             <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@modalContext.Id">
+                 @(Entity.Id == default ? "Create New ToDo" : "Edit")
+             </button>
+         </Trigger>
+         <ModalTitle>
+             <h1 class="modal-title fs-5" id="title_@modalContext.Id">@(Entity.Id == default ? "Create New ToDo" : "Edit")</h1>
+         </ModalTitle>
+         <ModalBody>
+             <div class="form-floating mb-3">
+                 <InputText @bind-Value="Input.Title" class="form-control" placeholder="title" />
+                 <label for="title" class="form-label">Title</label>
+                 <ValidationMessage For="() => Input.Title" class="text-danger" />
+             </div>
+         </ModalBody>
+         <ModalFooter>
+             <div class="form-floating mb-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="submit" class="btn btn-primary">Save</button>
+             </div>
+         </ModalFooter>
+     </Modal>
+</EditForm>
+
+ @code {
+    private ModalConfig modalConfig = default!;
+
+    [Parameter]
+    public ToDo Entity { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        modalConfig = new()
+        {
+            Id = $"Modal_{Entity.Id}"
+        };
+
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            Input.Title = Entity.Title;
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        var createModifyDate = DateTimeOffset.UtcNow;
+        Entity.ModifyDate = createModifyDate;
+        Entity.Title = Input.Title;
+
+        if (Entity.Id == default)
+        {
+            Entity.Id = Guid.NewGuid();
+            Entity.CreateDate = createModifyDate;
+            Entity.Status = ToDoStatus.NotCompleted;
+            Entity.UserId = HttpContext.GetRequiredUserId();
+
+            DatabaseContext.Add(Entity);
+            await DatabaseContext.SaveChangesAsync();
+        }
+        else
+        {
+            await DatabaseContext.ToDos
+                .Where(toDo => toDo.Id == Entity.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(toDo => toDo.Title, Entity.Title)
+                    .SetProperty(toDo => toDo.ModifyDate, Entity.ModifyDate));
+        }
+    }
+
+    private class InputModel
+    {
+        [Required]
+        [MaxLength(Constants.ToDoTitleMaxLength)]
+        public string Title { get; set; } = string.Empty;
+    }
+}

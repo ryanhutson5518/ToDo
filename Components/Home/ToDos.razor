@@ -3,23 +3,7 @@
 @inject DatabaseContext DatabaseContext
 
 <div class="row">
-    <Modal Config="createNewModalConfig">
-        <Trigger>
-            <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
-                Create New ToDo
-            </button>
-        </Trigger>
-        <ModalTitle>
-            <h1 class="modal-title fs-5" id="title_@context.Id">Create New ToDo</h1>
-        </ModalTitle>
-        <ModalBody>
-            <p>Testing...</p>
-        </ModalBody>
-        <ModalFooter>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-        </ModalFooter>
-    </Modal>
+    <ToDoModalEditForm />
 </div>
 
 
@@ -32,18 +16,13 @@ else if (toDos.Any())
     foreach (var toDo in toDos)
     {
         <div class="row">
-            <ToDoForm Entity="toDo" />
+            <ToDoModalEditForm Entity="toDo" />
         </div>
     }
 }
 
 @code {
     private List<ToDo>? toDos = null;
-
-    private ModalConfig createNewModalConfig = new()
-    {
-        Id = "CreateNewToDoModal"
-    };
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;

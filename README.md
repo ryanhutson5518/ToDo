@@ -7,7 +7,7 @@
 * ToDo: Probably a good idea to add SortOrder. Even though I really don't want to add drag and drop functionality, just adding SortOrder will be nice to ToDo and ToDoItem
 * Add support for recurring ToDos
 * MapMethods() has a method after this call called CacheOutput, oooo
-* /ToDoEditForm can be seen by URL. See if I can prevent this. Although, maybe it's not too big a deal
+* Remove GetToDoEditForm. Just keeping for now for reference
 
 * ToDo listing
 * New ToDo button
