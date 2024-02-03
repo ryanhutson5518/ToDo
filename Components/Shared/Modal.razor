@@ -1,0 +1,56 @@
+﻿<!-- Trigger modal -->
+@Trigger(Props)
+
+<!-- Modal -->
+<div class="modal fade" id="@Props.Id" tabindex="-1" aria-labelledby="title_@Props.Id" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (ModalTitle is not null)
+                {
+                    @ModalTitle(Props)
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            @if (ModalBody is not null)
+            {
+                <div class="modal-body">
+                    @ModalBody(Props)
+                </div>
+            }
+            @if (ModalFooter is not null)
+            {
+                <div class="modal-footer">
+                    @ModalFooter(Props)
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ModalProps Props { get; set; } = new()
+    {
+        Id = "Modal"
+    };
+
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment<ModalProps> Trigger { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment<ModalProps>? ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment<ModalProps>? ModalBody { get; set; }
+
+    [Parameter]
+    public RenderFragment<ModalProps>? ModalFooter { get; set; }
+
+    public class ModalProps
+    {
+        public required string Id { get; set; } = string.Empty;
+    }
+}

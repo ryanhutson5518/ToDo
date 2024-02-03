@@ -3,7 +3,23 @@
 @inject DatabaseContext DatabaseContext
 
 <div class="row">
-    <ToDoForm />
+    <Modal Props="createNewToDoModalProps">
+        <Trigger>
+            <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
+                Create New ToDo
+            </button>
+        </Trigger>
+        <ModalTitle>
+            <h1 class="modal-title fs-5" id="title_@context.Id">Create New ToDo</h1>
+        </ModalTitle>
+        <ModalBody>
+            <p>Testing...</p>
+        </ModalBody>
+        <ModalFooter>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+        </ModalFooter>
+    </Modal>
 </div>
 
 
@@ -23,6 +39,11 @@ else if (toDos.Any())
 
 @code {
     private List<ToDo>? toDos = null;
+
+    private ToDo.Components.Shared.Modal.ModalProps createNewToDoModalProps = new()
+    {
+        Id = "CreateNewToDoModal"
+    };
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
