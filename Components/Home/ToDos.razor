@@ -3,22 +3,23 @@
 @inject DatabaseContext DatabaseContext
 
 <div class="row">
-    @if (toDos == null)
-    {
-        // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
-    }
-    else if (toDos.Any())
-    {
-        foreach (var toDo in toDos)
-        {
-            <ToDoForm Model="toDo" />
-        }
-    }
-    else
-    {
-        <ToDoForm Model="new()" />
-    }
+    <ToDoForm />
 </div>
+
+
+@if (toDos == null)
+{
+    // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
+}
+else if (toDos.Any())
+{
+    foreach (var toDo in toDos)
+    {
+        <div class="row">
+            <ToDoForm Entity="toDo" />
+        </div>
+    }
+}
 
 @code {
     private List<ToDo>? toDos = null;

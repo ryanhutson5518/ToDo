@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace ToDo.Data;
 
-namespace ToDo.Data;
-
-public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatus
+public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatusModel
 {
     public Guid Id { get; set; }
 
@@ -12,13 +10,11 @@ public class ToDo : IKeyedModel, ITimestampedModel, IToDoStatus
 
     public ToDoStatus Status { get; set; }
 
-    [Required]
-    [MaxLength(100)]
     public string Title { get; set; } = string.Empty;
 
     public virtual List<ToDoItem> ToDoItems { get; set; } = [];
 
     public Guid UserId { get; set; }
 
-    public virtual User User { get; set; } = new();
+    public virtual User User { get; set; } = default!;
 }

@@ -1,6 +1,6 @@
 ﻿namespace ToDo.Data;
 
-public interface IToDoStatus
+public interface IToDoStatusModel
 {
     public ToDoStatus Status { get; set; }
 }
