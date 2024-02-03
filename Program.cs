@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ToDo.Components;
 using ToDo.Components.Account;
 using ToDo.Data;
+using ToDo.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,5 +60,8 @@ app.MapRazorComponents<App>();
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+/** Maps all endpoints that implement <see cref="IEndpoint"/> */
+app.MapEndpoints();
 
 app.Run();

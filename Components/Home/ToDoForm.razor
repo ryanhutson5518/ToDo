@@ -17,7 +17,7 @@
     public ToDo Entity { get; set; } = new();
 
     [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    public HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();

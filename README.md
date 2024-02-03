@@ -4,4 +4,16 @@
 * Maybe come back and create a UpdateEntity class. Use in ToDoForm
 * LEFT OFF => Continue configuring the custom model creating functionality
 * ToDo: DatabaseContext.ConfigureConventions seems like a good spot to put my custom model building logic
-*
+* ToDo: Probably a good idea to add SortOrder. Even though I really don't want to add drag and drop functionality, just adding SortOrder will be nice to ToDo and ToDoItem
+* Add support for recurring ToDos
+* MapMethods() has a method after this call called CacheOutput, oooo
+* /ToDoEditForm can be seen by URL. See if I can prevent this. Although, maybe it's not too big a deal
+
+* ToDo listing
+* New ToDo button
+	* Htmx to get EditForm
+* Edit button will call API to get EditForm html
+	* User can edit ToDo.Title and ToDoItems.Desciptions
+* Htmx will be used for quick update options
+	* Quick update Status
+	* Quick delete ToDo and ToDoItem
