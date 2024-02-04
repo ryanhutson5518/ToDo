@@ -1,8 +1,8 @@
+* LEFT OFF => List out ToDos. Configure proper edit trigger
 * Remove unused endpoints such as /auth
 * I feel like adding a table to track ToDo priorities might be nice
 * At the very end, I can maybe just delete the migrations folder and have 1 migration. Might be confusing though not sure
 * Maybe come back and create a UpdateEntity class. Use in ToDoForm
-* LEFT OFF => Continue configuring the custom model creating functionality
 * ToDo: DatabaseContext.ConfigureConventions seems like a good spot to put my custom model building logic
 * ToDo: Probably a good idea to add SortOrder. Even though I really don't want to add drag and drop functionality, just adding SortOrder will be nice to ToDo and ToDoItem
 * Add support for recurring ToDos

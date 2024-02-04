@@ -2,10 +2,18 @@
 
 @inject DatabaseContext DatabaseContext
 
-<div class="row">
-    <ToDoModalEditForm />
-</div>
-
+<ToDoModalEditForm>
+    <Trigger>
+        <div class="row mt-3">
+            <div class="col">
+                <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
+                    Create New ToDo
+                </button>
+            </div>
+        </div>
+    </Trigger>
+</ToDoModalEditForm>
+<hr />
 
 @if (toDos == null)
 {
@@ -16,7 +24,13 @@ else if (toDos.Any())
     foreach (var toDo in toDos)
     {
         <div class="row">
-            <ToDoModalEditForm Entity="toDo" />
+            <ToDoModalEditForm Entity="toDo">
+                <Trigger>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
+                        Edit
+                    </button>
+                </Trigger>
+            </ToDoModalEditForm>
         </div>
     }
 }

@@ -1,37 +1,45 @@
 ﻿@inject DatabaseContext DatabaseContext
 
-<EditForm Enhance Model="Input" method="post" OnValidSubmit="OnValidSubmitAsync" FormName="@modalConfig.Id">
+<EditForm
+    Enhance
+    Model="Input"
+    method="post"
+    OnSubmit="OnSubmitAsync"
+    FormName="@modalConfig.Id"
+>
     <DataAnnotationsValidator />
-     <Modal Config="modalConfig" Context="modalContext">
-         <Trigger>
-             <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@modalContext.Id">
-                 @(Entity.Id == default ? "Create New ToDo" : "Edit")
-             </button>
-         </Trigger>
-         <ModalTitle>
-             <h1 class="modal-title fs-5" id="title_@modalContext.Id">@(Entity.Id == default ? "Create New ToDo" : "Edit")</h1>
-         </ModalTitle>
-         <ModalBody>
-             <div class="form-floating mb-3">
-                 <InputText @bind-Value="Input.Title" class="form-control" placeholder="title" />
-                 <label for="title" class="form-label">Title</label>
-                 <ValidationMessage For="() => Input.Title" class="text-danger" />
-             </div>
-         </ModalBody>
-         <ModalFooter>
-             <div class="form-floating mb-3">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                 <button type="submit" class="btn btn-primary">Save</button>
-             </div>
-         </ModalFooter>
-     </Modal>
+    <Modal Context="modalContext" Config="modalConfig">
+        <Trigger>
+            @Trigger(modalConfig)
+    </Trigger>
+    <ModalTitle>
+        <h1 class="modal-title fs-5" id="title_@modalContext.Id">@(Entity.Id == default ? "Create" : "Edit")</h1>
+    </ModalTitle>
+    <ModalBody>
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="Input.Title" class="form-control" placeholder="title" />
+            <label for="title" class="form-label">Title</label>
+            <ValidationMessage For="() => Input.Title" class="text-danger" />
+        </div>
+    </ModalBody>
+    <ModalFooter>
+        <div class="form-floating mb-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" onclick="event.returnValue = true">Save</button>
+        </div>
+    </ModalFooter>
+</Modal>
 </EditForm>
 
- @code {
+@code {
     private ModalConfig modalConfig = default!;
 
     [Parameter]
     public ToDo Entity { get; set; } = new();
+
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment<ModalConfig> Trigger { get; set; } = default!;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -76,6 +84,18 @@
                     .SetProperty(toDo => toDo.Title, Entity.Title)
                     .SetProperty(toDo => toDo.ModifyDate, Entity.ModifyDate));
         }
+    }
+
+    private async Task OnInValidSubmitAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private async Task OnSubmitAsync(EditContext context)
+    {
+        //OnValidSubmit="OnValidSubmitAsync"
+        //OnInvalidSubmit = "OnInValidSubmitAsync"
+        await Task.CompletedTask;
     }
 
     private class InputModel
