@@ -1,9 +1,0 @@
-﻿<InputText @bind-Value="Input.Title" class="form-control" placeholder="title" />
-<label for="title" class="form-label">Title</label>
-<ValidationMessage For="() => Input.Title" class="text-danger" />
-
-@code {
-    [Parameter]
-    [EditorRequired]
-    public InputModel Input { get; set; } = new();
-}

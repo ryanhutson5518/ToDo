@@ -1,55 +1,30 @@
 ﻿<!-- Trigger modal -->
-@Trigger(Config)
+@ModalTrigger
 
 <!-- Modal -->
-<div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="title_@Config.Id" aria-hidden="true">
+<div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="@Config.Id" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                @if (ModalTitle is not null)
-                {
-                    @ModalTitle(Config)
-                }
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            @if (ModalBody is not null)
-            {
-                <div class="modal-body">
-                    @ModalBody(Config)
-                </div>
-            }
-            @if (ModalFooter is not null)
-            {
-                <div class="modal-footer">
-                    @ModalFooter(Config)
-                </div>
-            }
-        </div>
+        @ModalContent
     </div>
 </div>
 
 @code {
     [Parameter]
-    public ModalConfig Config { get; set; } = new()
-    {
-        Id = "Modal"
-    };
+    [EditorRequired]
+    public required ModalConfig Config { get; set; }
 
     [Parameter]
     [EditorRequired]
-    public RenderFragment<ModalConfig> Trigger { get; set; } = default!;
+    public required RenderFragment ModalTrigger { get; set; }
 
     [Parameter]
-    public RenderFragment<ModalConfig>? ModalTitle { get; set; }
-
-    [Parameter]
-    public RenderFragment<ModalConfig>? ModalBody { get; set; }
-
-    [Parameter]
-    public RenderFragment<ModalConfig>? ModalFooter { get; set; }
+    [EditorRequired]
+    public required RenderFragment ModalContent { get; set; }
 
     public class ModalConfig
     {
-        public required string Id { get; set; } = string.Empty;
+        public required string Id { get; set; }
+
+        public required string TitleId { get; set; }
     }
 }

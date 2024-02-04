@@ -2,17 +2,17 @@
 
 @inject DatabaseContext DatabaseContext
 
-<ToDoModalEditForm>
-    <Trigger>
+<ToDoModalForm ModalConfig="BuildModalConfig(Guid.Empty)">
+    <ModalTrigger>
         <div class="row mt-3">
             <div class="col">
-                <button type="button" class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#@BuildModalConfig(Guid.Empty).Id" class="btn btn-lg btn-primary">
                     Create New ToDo
                 </button>
             </div>
         </div>
-    </Trigger>
-</ToDoModalEditForm>
+    </ModalTrigger>
+</ToDoModalForm>
 <hr />
 
 @if (toDos == null)
@@ -23,14 +23,16 @@ else if (toDos.Any())
 {
     foreach (var toDo in toDos)
     {
+        var modalConfig = BuildModalConfig(toDo.Id);
+
         <div class="row">
-            <ToDoModalEditForm Entity="toDo">
-                <Trigger>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@context.Id">
+            <ToDoModalForm ModalConfig="modalConfig" Entity="toDo">
+                <ModalTrigger>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
                         Edit
                     </button>
-                </Trigger>
-            </ToDoModalEditForm>
+                </ModalTrigger>
+            </ToDoModalForm>
         </div>
     }
 }
@@ -52,4 +54,10 @@ else if (toDos.Any())
             .OrderByDescending(t => t.CreateDate)
             .ToListAsync();
     }
+
+    private static ModalConfig BuildModalConfig(Guid entityId) => new()
+    {
+        Id = $"modal_{entityId}",
+        TitleId = $"title_{entityId}",
+    };
 }

@@ -1,0 +1,49 @@
+﻿@inject DatabaseContext DatabaseContext
+
+<Modal Config="ModalConfig">
+    <ModalTrigger>
+        @ModalTrigger
+    </ModalTrigger>
+    <ModalContent>
+        <HtmxForm>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="@ModalConfig.TitleId">@(Entity.Id == default ? "Create" : "Edit")</h1>
+                    <button type="button" data-bs-dismiss="modal" class="btn-close" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input value="@(Entity.Title)" class="form-control" placeholder="title" />
+                        <label for="title" class="form-label">Title</label>
+                        <!-- <ValidationMessage For="() => Entity.Title" class="text-danger" /> -->
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="form-floating mb-3">
+                        <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">
+                            Close
+                        </button>
+                        <button @attributes="@(HtmxForm.DefaultHtmxAttributes("/update-todo"))" type="button" class="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </HtmxForm>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public required RenderFragment ModalTrigger { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required ModalConfig ModalConfig { get; set; }
+
+    [Parameter]
+    public ToDo Entity { get; set; } = new();
+}
