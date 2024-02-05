@@ -1,0 +1,21 @@
+﻿<Modal Config="ModalConfig">
+    <ModalTrigger>
+        @ModalTrigger
+    </ModalTrigger>
+    <ModalContent>
+        <ToDoModalForm ModalConfig="ModalConfig" Entity="Entity" />
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public required ModalConfig ModalConfig { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required RenderFragment ModalTrigger { get; set; }
+
+    [Parameter]
+    public ToDo Entity { get; set; } = new();
+}

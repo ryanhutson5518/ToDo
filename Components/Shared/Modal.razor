@@ -2,7 +2,7 @@
 @ModalTrigger
 
 <!-- Modal -->
-<div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="@Config.Id" aria-hidden="true">
+<div class="modal fade" id="@Config.Id" tabindex="-1" aria-labelledby="@Config.TitleId" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         @ModalContent
     </div>
@@ -20,6 +20,12 @@
     [Parameter]
     [EditorRequired]
     public required RenderFragment ModalContent { get; set; }
+
+    public static ModalConfig BuildModalConfig(object uniqueId) => new()
+    {
+        Id = $"modal_{uniqueId}",
+        TitleId = $"title{uniqueId}",
+    };
 
     public class ModalConfig
     {

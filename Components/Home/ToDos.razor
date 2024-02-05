@@ -2,62 +2,59 @@
 
 @inject DatabaseContext DatabaseContext
 
-<ToDoModalForm ModalConfig="BuildModalConfig(Guid.Empty)">
-    <ModalTrigger>
-        <div class="row mt-3">
-            <div class="col">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#@BuildModalConfig(Guid.Empty).Id" class="btn btn-lg btn-primary">
-                    Create New ToDo
-                </button>
-            </div>
-        </div>
-    </ModalTrigger>
-</ToDoModalForm>
-<hr />
-
-@if (toDos == null)
-{
-    // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
-}
-else if (toDos.Any())
-{
-    foreach (var toDo in toDos)
-    {
-        var modalConfig = BuildModalConfig(toDo.Id);
-
-        <div class="row">
-            <ToDoModalForm ModalConfig="modalConfig" Entity="toDo">
-                <ModalTrigger>
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
-                        Edit
+<div id="@WrapperId">
+    <ToDoModal ModalConfig="@BuildModalConfig(Guid.Empty)">
+        <ModalTrigger>
+            <div class="row mt-3">
+                <div class="col">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#@BuildModalConfig(Guid.Empty).Id" class="btn btn-lg btn-primary">
+                        Create New ToDo
                     </button>
-                </ModalTrigger>
-            </ToDoModalForm>
-        </div>
+                </div>
+            </div>
+        </ModalTrigger>
+    </ToDoModal>
+    <hr />
+
+    @if (toDos == null)
+    {
+        // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
     }
-}
+    else if (toDos.Any())
+    {
+        foreach (var toDo in toDos)
+        {
+            var modalConfig = BuildModalConfig(toDo.Id);
+
+            <div class="row">
+                <ToDoModal ModalConfig="modalConfig" Entity="toDo">
+                    <ModalTrigger>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
+                            Edit
+                        </button>
+                    </ModalTrigger>
+                </ToDoModal>
+            </div>
+        }
+    }
+</div>
 
 @code {
     private List<ToDo>? toDos = null;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    [Parameter]
+    [EditorRequired]
+    public required Guid UserId { get; set; }
+
+    public static string WrapperId = "toDos";
 
     protected override async Task OnInitializedAsync()
     {
-        var userId = HttpContext.GetRequiredUserId();
-
         toDos = await DatabaseContext.ToDos
             .AsNoTracking()
             .Include(t => t.ToDoItems.OrderByDescending(i => i.CreateDate))
-            .Where(t => t.UserId == userId)
+            .Where(t => t.UserId == UserId)
             .OrderByDescending(t => t.CreateDate)
             .ToListAsync();
     }
-
-    private static ModalConfig BuildModalConfig(Guid entityId) => new()
-    {
-        Id = $"modal_{entityId}",
-        TitleId = $"title_{entityId}",
-    };
 }

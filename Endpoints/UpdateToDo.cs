@@ -1,80 +1,89 @@
-﻿//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Components.Forms;
-//using Microsoft.AspNetCore.Http.HttpResults;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using System.Collections.ObjectModel;
-//using System.Net;
-//using WebApp.Components.Home;
-//using WebApp.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Frozen;
+using System.Net;
+using WebApp.Components.Home;
+using WebApp.Components.Shared;
+using WebApp.Data;
 
-//namespace WebApp.Endpoints;
+namespace WebApp.Endpoints;
 
-//public class UpdateToDo : IEndpoint
-//{
-//    public string Pattern => "/validate-todo/{toDoId:guid}";
+public class UpdateToDo : IEndpoint
+{
+    public string Pattern => "/update-todo";
 
-//    public HttpMethod HttpMethod => HttpMethod.Post;
+    public HttpMethod HttpMethod => HttpMethod.Post;
 
-//    public Delegate Handler => [Authorize] async (
-//        HttpContext httpContext,
-//        [FromRoute] Guid toDoId,
-//        [FromForm] Form form,
-//        [FromServices] DatabaseContext databaseContext) =>
-//    {
-//        // validation
-//        if (string.IsNullOrWhiteSpace(form.Input.Title))
-//        {
-//            var editContext = new EditContext(form.Input);
-//            var validationStore = new ValidationMessageStore(editContext);
+    public Delegate Handler => [Authorize] async (
+        HttpContext httpContext,
+        [FromForm] Dto dto,
+        [FromServices] DatabaseContext databaseContext) =>
+    {
+        var entity = dto.Id == default ? null : await databaseContext.ToDos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == dto.Id);
 
-//            validationStore.Add(() => form.Input, "Title can't be empty");
+        entity ??= new();
+        entity.Title = dto.Title;
 
-//            var parameters = new ReadOnlyDictionary<string, object?>(new Dictionary<string, object?>
-//            {
-//                { nameof(ToDoFormFields.Input), form.Input },
-//                { nameof(EditContext), editContext },
-//            });
-//            return new RazorComponentResult<ToDoFormFields>(parameters)
-//            {
-//                StatusCode = (int)HttpStatusCode.BadRequest
-//            };
-//        }
+        var serverErrors = new Dictionary<string, HashSet<string>>();
+        var parameters = new Dictionary<string, object?>();
 
-//        var toDo = toDoId == default ? null : await databaseContext.ToDos
-//            .AsNoTracking()
-//            .FirstOrDefaultAsync(t => t.Id == toDoId);
+        // validation
+        if (string.IsNullOrWhiteSpace(dto.Title))
+        {
+            serverErrors.Add(nameof(ToDo.Title), new HashSet<string> { "Title is required" });
 
-//        toDo ??= new();
+            parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity.Id));
+            parameters.Add(nameof(ToDoModalForm.Entity), entity);
+            parameters.Add(nameof(ToDoModalForm.ServerErrors), serverErrors.ToFrozenDictionary(x => x.Key, x => x.Value.ToFrozenSet()));
 
-//        var createModifyDate = DateTimeOffset.UtcNow;
-//        toDo.ModifyDate = createModifyDate;
-//        toDo.Title = form.Input.Title;
+            httpContext.Response.Headers.Append("HX-RETARGET", "closest form");
+            return (RazorComponentResult)new RazorComponentResult<ToDoModalForm>(parameters)
+            {
+                StatusCode = (int)HttpStatusCode.BadRequest
+            };
+        }
 
-//        if (toDo.Id == default)
-//        {
-//            toDo.Id = Guid.NewGuid();
-//            toDo.CreateDate = createModifyDate;
-//            toDo.Status = ToDoStatus.NotCompleted;
-//            toDo.UserId = httpContext.GetRequiredUserId();
+        var createModifyDate = DateTimeOffset.UtcNow;
+        entity.ModifyDate = createModifyDate;
 
-//            databaseContext.Add(toDo);
-//            await databaseContext.SaveChangesAsync();
-//        }
-//        else
-//        {
-//            await databaseContext.ToDos
-//                .Where(toDo => toDo.Id == toDo.Id)
-//                .ExecuteUpdateAsync(x => x
-//                    .SetProperty(toDo => toDo.Title, toDo.Title)
-//                    .SetProperty(toDo => toDo.ModifyDate, toDo.ModifyDate));
-//        }
+        if (entity.Id == default)
+        {
+            entity.Id = Guid.NewGuid();
+            entity.CreateDate = createModifyDate;
+            entity.Status = ToDoStatus.NotCompleted;
+            entity.UserId = httpContext.GetRequiredUserId();
 
-//        return Results.Redirect("/");
-//    };
+            databaseContext.Add(entity);
+            await databaseContext.SaveChangesAsync();
+        }
+        else
+        {
+            await databaseContext.ToDos
+                .Where(t => t.Id == entity.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(t => t.Title, entity.Title)
+                    .SetProperty(t => t.ModifyDate, entity.ModifyDate));
+        }
 
-//    private class Form
-//    {
-//        public ToDoModalEditForm.InputModel Input { get; set; } = new();
-//    }
-//}
+        parameters.Add(nameof(ToDos.UserId), httpContext.GetRequiredUserId());
+
+        httpContext.Response.Headers.Append("HX-RETARGET", $"#{ToDos.WrapperId}");
+        return (RazorComponentResult)new RazorComponentResult<ToDos>(parameters)
+        {
+            PreventStreamingRendering = true
+        };
+    };
+
+    private class Dto
+    {
+        /// <inheritdoc cref="ToDo.Id"/>
+        public Guid Id { get; set; }
+
+        /// <inheritdoc cref="ToDo.Title"/>
+        public string Title { get; set; } = string.Empty;
+    }
+}

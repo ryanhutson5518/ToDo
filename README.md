@@ -1,4 +1,9 @@
-* LEFT OFF => EditForm sucksssss. At this point I should create my own edit form
+* LEFT OFF => Enhance error messaging
+	* Input form should be red
+	* I can maybe create a component similar to ValidationMessage
+	* Test what happens when multiple errors happen, such as max length and valid email
+	* Implement FluentValidations
+	* Implement global error. Probably put near submit button
 * Remove unused endpoints such as /auth
 * I feel like adding a table to track ToDo priorities might be nice
 * At the very end, I can maybe just delete the migrations folder and have 1 migration. Might be confusing though not sure
