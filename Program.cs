@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using WebApp.Components;
 using WebApp.Components.Account;
 using WebApp.Data;
 using WebApp.Endpoints;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+builder.Services.AddScoped<WebApp.Services.IValidator, Validator>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -36,6 +39,8 @@ builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirme
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<WebApp.Services.IValidator>();
 
 var app = builder.Build();
 

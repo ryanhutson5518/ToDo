@@ -1,0 +1,56 @@
+﻿@using static WebApp.Endpoints.AddToDoItemRow
+@using static WebApp.Endpoints.UpdateToDo
+
+<div id="@WrapperId">
+    @for (int index = 0; index <= Entity.ToDoItems.Count; index++)
+    {
+        bool isLastToDoItem = index == Entity.ToDoItems.Count;
+        bool isCreateMode = Entity.Id == default;
+
+        var toDoItem = isLastToDoItem
+            ? new()
+            : Entity.ToDoItems[index];
+
+        var toDoItemFieldName = $"{nameof(ToDoDto.ToDoItems)}[{index}]";
+
+        var checkedAttribute = toDoItem.Status == ToDoStatus.Completed
+            ? new Dictionary<string, object?> { { "value", "true" }, { "checked", "" } }
+            : new Dictionary<string, object?> { { "value", "true" } };
+
+        if (isLastToDoItem == false || isCreateMode)
+        {
+            <input type="hidden" name="@($"{toDoItemFieldName}.{nameof(ToDoItemDto.Id)}")" value="@toDoItem.Id" />
+
+            <div class="input-group">
+                <div class="input-group-text">
+                    <input @attributes="checkedAttribute" type="checkbox" name="@($"{toDoItemFieldName}.{nameof(ToDoItemDto.IsCompleted)}")" class="form-check-input mt-0">
+                </div>
+                <input type="text" name="@($"{toDoItemFieldName}.{nameof(ToDoItemDto.Description)}")" value="@toDoItem.Description" class="form-control">
+            </div>
+            <ServerValidationMessage For="@($"{toDoItemFieldName}.{nameof(ToDoItemDto.Description)}")" ServerErrors="ServerErrors" />
+        }
+        if (isLastToDoItem)
+        {
+            <div class="container text-center mt-3">
+                <div class="row">
+                    <div class="col">
+                        <button @attributes="@HtmxForm.DefaultHtmxAttributes("/add-todoitem-row")" type="button" class="btn btn-outline-primary">Add Row +</button>
+                        <ServerValidationMessage For="@AddRowButtonName" ServerErrors="ServerErrors" />
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public ToDo Entity { get; set; } = new();
+
+    [Parameter]
+    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
+
+    public static string WrapperId = "toDoItems";
+
+    public static string AddRowButtonName = "add-row-btn";
+}

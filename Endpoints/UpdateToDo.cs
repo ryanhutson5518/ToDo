@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Frozen;
 using System.Net;
 using WebApp.Components.Home;
 using WebApp.Components.Shared;
 using WebApp.Data;
+using WebApp.Services;
 
 namespace WebApp.Endpoints;
 
@@ -18,72 +18,118 @@ public class UpdateToDo : IEndpoint
 
     public Delegate Handler => [Authorize] async (
         HttpContext httpContext,
-        [FromForm] Dto dto,
-        [FromServices] DatabaseContext databaseContext) =>
+        [FromForm] ToDoDto dto,
+        [FromServices] DatabaseContext databaseContext,
+        [FromServices] IValidator validator) =>
     {
-        var entity = dto.Id == default ? null : await databaseContext.ToDos
-            .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Id == dto.Id);
-
-        entity ??= new();
-        entity.Title = dto.Title;
-
-        var serverErrors = new Dictionary<string, HashSet<string>>();
+        ToDo? entity = null;
         var parameters = new Dictionary<string, object?>();
 
-        // validation
-        if (string.IsNullOrWhiteSpace(dto.Title))
+        try
         {
-            serverErrors.Add(nameof(ToDo.Title), new HashSet<string> { "Title is required" });
+            entity = dto.Id == default ? null : await databaseContext.ToDos
+                .Include(t => t.ToDoItems)
+                .FirstOrDefaultAsync(t => t.Id == dto.Id);
 
-            parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity.Id));
-            parameters.Add(nameof(ToDoModalForm.Entity), entity);
-            parameters.Add(nameof(ToDoModalForm.ServerErrors), serverErrors.ToFrozenDictionary(x => x.Key, x => x.Value.ToFrozenSet()));
+            entity ??= new();
+            entity.Title = dto.Title;
 
-            httpContext.Response.Headers.Append("HX-RETARGET", "closest form");
-            return (RazorComponentResult)new RazorComponentResult<ToDoModalForm>(parameters)
+            var validationResult = validator.Validate(dto);
+            if (validationResult.IsValid == false)
             {
-                StatusCode = (int)HttpStatusCode.BadRequest
+                parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity.Id));
+                parameters.Add(nameof(ToDoModalForm.Entity), entity);
+                parameters.Add(nameof(ToDoModalForm.ServerErrors), validationResult.Errors);
+
+                httpContext.HtmxRetarget("closest form");
+                return (RazorComponentResult)new RazorComponentResult<ToDoModalForm>(parameters)
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
+
+            var createModifyDate = DateTimeOffset.UtcNow;
+            entity.ModifyDate = createModifyDate;
+
+            if (entity.Id == default)
+            {
+                entity.Id = Guid.NewGuid();
+                entity.CreateDate = createModifyDate;
+                entity.Status = ToDoStatus.NotCompleted;
+                entity.UserId = httpContext.GetRequiredUserId();
+                entity.ToDoItems = dto.ToDoItems
+                    .Select((toDoItemDto, index) => new ToDoItem
+                    {
+                        Id = Guid.NewGuid(),
+                        CreateDate = createModifyDate,
+                        ModifyDate = createModifyDate,
+                        Status = toDoItemDto.IsCompleted ? ToDoStatus.Completed : ToDoStatus.NotCompleted,
+                        Description = toDoItemDto.Description,
+                        SortOrder = index,
+                    }).ToList();
+
+                databaseContext.Add(entity);
+            }
+            else
+            {
+                entity.ModifyDate = createModifyDate;
+                
+                foreach (var (toDoItemDto, index) in dto.ToDoItems.Select((toDoItemDto, index) => (toDoItemDto, index)))
+                {
+                    // create
+                    if (toDoItemDto.Id == default)
+                    {
+                        entity.ToDoItems.Add(new ToDoItem
+                        {
+                            Id = Guid.NewGuid(),
+                            CreateDate = createModifyDate,
+                            ModifyDate = createModifyDate,
+                            Status = toDoItemDto.IsCompleted ? ToDoStatus.Completed : ToDoStatus.NotCompleted,
+                            Description = toDoItemDto.Description,
+                            SortOrder = index,
+                        });
+                    }
+                    // edit
+                    else
+                    {
+                        var toDoItem = entity.ToDoItems.First(i => i.Id == toDoItemDto.Id);
+                        toDoItem.ModifyDate = createModifyDate;
+                        toDoItem.Status = toDoItemDto.IsCompleted ? ToDoStatus.Completed : ToDoStatus.NotCompleted;
+                        toDoItem.Description = toDoItemDto.Description;
+                        toDoItem.SortOrder = index;
+                    }
+                    // delete
+                    entity.ToDoItems.RemoveAll(e => dto.ToDoItems.Any(d => d.Id == e.Id) == false);
+                }
+            }
+
+            await databaseContext.SaveChangesAsync();
+
+            parameters.Add(nameof(ToDos.UserId), httpContext.GetRequiredUserId());
+
+            httpContext.HtmxRetarget($"#{ToDos.WrapperId}");
+            return (RazorComponentResult)new RazorComponentResult<ToDos>(parameters)
+            {
+                PreventStreamingRendering = true
             };
         }
-
-        var createModifyDate = DateTimeOffset.UtcNow;
-        entity.ModifyDate = createModifyDate;
-
-        if (entity.Id == default)
+        catch
         {
-            entity.Id = Guid.NewGuid();
-            entity.CreateDate = createModifyDate;
-            entity.Status = ToDoStatus.NotCompleted;
-            entity.UserId = httpContext.GetRequiredUserId();
+            // log exception here
 
-            databaseContext.Add(entity);
-            await databaseContext.SaveChangesAsync();
+            var serverErrors = new Dictionary<string, HashSet<string>>
+            {
+                { Constants.ServerErrorGlobal, [Constants.ServerErrorGlobalMessage] }
+            };
+            parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity?.Id ?? default));
+            parameters.Add(nameof(ToDoModalForm.Entity), entity ?? new());
+            parameters.Add(nameof(ToDoModalForm.ServerErrors), serverErrors);
+
+            httpContext.HtmxRetarget("closest form");
+            return (RazorComponentResult)new RazorComponentResult<ToDoModalForm>(parameters)
+            {
+                StatusCode = (int)HttpStatusCode.InternalServerError
+            };
         }
-        else
-        {
-            await databaseContext.ToDos
-                .Where(t => t.Id == entity.Id)
-                .ExecuteUpdateAsync(x => x
-                    .SetProperty(t => t.Title, entity.Title)
-                    .SetProperty(t => t.ModifyDate, entity.ModifyDate));
-        }
-
-        parameters.Add(nameof(ToDos.UserId), httpContext.GetRequiredUserId());
-
-        httpContext.Response.Headers.Append("HX-RETARGET", $"#{ToDos.WrapperId}");
-        return (RazorComponentResult)new RazorComponentResult<ToDos>(parameters)
-        {
-            PreventStreamingRendering = true
-        };
     };
-
-    private class Dto
-    {
-        /// <inheritdoc cref="ToDo.Id"/>
-        public Guid Id { get; set; }
-
-        /// <inheritdoc cref="ToDo.Title"/>
-        public string Title { get; set; } = string.Empty;
-    }
 }

@@ -1,39 +1,34 @@
-﻿@using System.Collections.Frozen
+﻿@using static WebApp.Endpoints.UpdateToDo
 @inject DatabaseContext DatabaseContext
 
 <HtmxForm>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h1 id="@ModalConfig.TitleId" class="modal-title fs-5">@(Entity.Id == default ? "Create" : "Edit")</h1>
-            <button type="button" data-bs-dismiss="modal" class="btn-close" aria-label="Close"></button>
-        </div>
+    <input type="hidden" name="@nameof(ToDoDto.Id)" value="@Entity.Id" />
 
-        <div class="modal-body">
-            <div class="form-floating mb-3">
-                <input type="hidden" name="@nameof(ToDo.Id)" value="@Entity.Id" />
+    <div class="modal-header">
+        <h1 id="@ModalConfig.TitleId" class="modal-title fs-5">@(Entity.Id == default ? "Create" : "Edit")</h1>
+        <button type="button" data-bs-dismiss="modal" class="btn-close" aria-label="Close"></button>
+    </div>
 
-                <input type="text" name="@nameof(ToDo.Title)" value="@Entity.Title" class="form-control" placeholder="title" />
-                <label for="title" class="form-label">Title</label>
-                @if (ServerErrors?.TryGetValue(nameof(ToDo.Title), out var errors) == true)
-                {
-                    foreach (var error in errors)
-                    {
-                        <div class="validation-message text-danger">@error</div>
-                    }
-                }
-            </div>
+    <div class="modal-body">
+        <div class="form-floating mb-3">
+            <input type="text" name="@nameof(ToDoDto.Title)" value="@Entity.Title" class="form-control" placeholder="title" autofocus-after-modal-shown />
+            <label for="@nameof(ToDoDto.Title)" class="form-label">Title</label>
+            <ServerValidationMessage For="@nameof(ToDoDto.Title)" ServerErrors="ServerErrors" />
         </div>
+        
+        <ToDoItems Entity="Entity" ServerErrors="ServerErrors" />
+    </div>
 
-        <div class="modal-footer">
-            <div class="form-floating mb-3">
-                <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">
-                    Close
-                </button>
-                <button @attributes="@(HtmxForm.DefaultHtmxAttributes("/update-todo"))" type="button" class="btn btn-primary">
-                    Save
-                </button>
-            </div>
+    <div class="modal-footer">
+        <div class="form-floating mb-3">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">
+                Close
+            </button>
+            <button @attributes="@(HtmxForm.DefaultHtmxAttributes("/update-todo"))" type="button" class="btn btn-primary" hx-hide-modals-before-swap>
+                Save
+            </button>
         </div>
+        <ServerValidationMessage For="@Constants.ServerErrorGlobal" ServerErrors="ServerErrors" />
     </div>
 </HtmxForm>
 
@@ -46,5 +41,5 @@
     public ToDo Entity { get; set; } = new();
 
     [Parameter]
-    public FrozenDictionary<string, FrozenSet<string>>? ServerErrors { get; set; }
+    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
 }

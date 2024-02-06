@@ -1,0 +1,17 @@
+﻿@if (ServerErrors?.TryGetValue(For, out var errors) == true && errors.Any())
+{
+    foreach (var error in errors)
+    {
+        <div class="validation-message text-danger">@error</div>
+    }
+}
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required string For { get; set; }
+}

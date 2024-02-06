@@ -1,5 +1,4 @@
 ﻿@attribute [StreamRendering]
-
 @inject DatabaseContext DatabaseContext
 
 <div id="@WrapperId">
@@ -52,7 +51,7 @@
     {
         toDos = await DatabaseContext.ToDos
             .AsNoTracking()
-            .Include(t => t.ToDoItems.OrderByDescending(i => i.CreateDate))
+            .Include(t => t.ToDoItems.OrderBy(i => i.SortOrder))
             .Where(t => t.UserId == UserId)
             .OrderByDescending(t => t.CreateDate)
             .ToListAsync();
