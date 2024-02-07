@@ -1,17 +1,20 @@
-﻿@if (ServerErrors?.TryGetValue(For, out var errors) == true && errors.Any())
-{
-    foreach (var error in errors)
+﻿<div id="@WrapperId(For)">
+    @if (ServerErrors?.TryGetValue(For, out var errors) == true && errors.Any())
     {
-        <div class="validation-message text-danger">@error</div>
+        foreach (var error in errors)
+        {
+            <div class="validation-message text-danger">@error</div>
+        }
     }
-}
+</div>
 
 @code {
     [Parameter]
     [EditorRequired]
-    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
+    public required string For { get; set; }
 
     [Parameter]
-    [EditorRequired]
-    public required string For { get; set; }
+    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
+
+    public static string WrapperId(string uniqueId) => $"server-errors_{uniqueId}";
 }

@@ -53,6 +53,8 @@
                                 </ul>
 
                                 <div class="container mt-3">
+                                    <ServerValidationMessage For="@toDo.Id.ToString()" />
+
                                     <div class="row">
                                         <div class="col-6 text-end">
                                             <ToDoModal ModalConfig="modalConfig" Model="toDo">
@@ -65,7 +67,12 @@
                                         </div>
                                         
                                         <div class="col-6 text-start">
-                                            <button type="button" class="btn btn-danger">
+                                            <button
+                                                type="button"
+                                                hx-delete="@($"{Constants.ToDoDeletePath}/{toDo.Id}")"
+                                                hx-disabled-elt="this"
+                                                class="btn btn-danger"
+                                            >
                                                 <SvgTrash3 />
                                             </button>
                                         </div>

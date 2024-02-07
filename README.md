@@ -1,4 +1,7 @@
-* LEFT OFF => Enhance error messaging
+* LEFT OFF => 
+	* Need to configure IsCompleted when user clicks on list item
+	* Need to configure delete endpoint when user wants to delete ToDo
+* Enhance error messaging
 	* Input form should be red
 	* Test what happens when multiple errors happen, such as max length and valid email
 * It would be best to clear any changes if the user doesn't save

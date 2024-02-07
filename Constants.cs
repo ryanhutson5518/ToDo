@@ -12,6 +12,8 @@ public static class Constants
 
     public const string ToDoUpdatePath = "/todo-update";
 
+    public const string ToDoDeletePath = "/todo-delete";
+
     public const string ToDoItemAddRowPath = "/todoitem-add-row";
 
     public const string ToDoItemDeleteRowPath = "/todoitem-delete-row";
