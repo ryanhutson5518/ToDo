@@ -37,8 +37,8 @@ public class UpdateToDo : IEndpoint
             var validationResult = validator.Validate(dto);
             if (validationResult.IsValid == false)
             {
-                parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity.Id));
-                parameters.Add(nameof(ToDoModalForm.Entity), entity);
+                parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(dto.Id));
+                parameters.Add(nameof(ToDoModalForm.Model), dto);
                 parameters.Add(nameof(ToDoModalForm.ServerErrors), validationResult.Errors);
 
                 httpContext.HtmxRetarget("closest form");
@@ -73,13 +73,16 @@ public class UpdateToDo : IEndpoint
             else
             {
                 entity.ModifyDate = createModifyDate;
+
+                // delete
+                entity.ToDoItems.RemoveAll(e => e.Id != default && dto.ToDoItems.Any(d => d.Id == e.Id) == false);
                 
                 foreach (var (toDoItemDto, index) in dto.ToDoItems.Select((toDoItemDto, index) => (toDoItemDto, index)))
                 {
                     // create
                     if (toDoItemDto.Id == default)
                     {
-                        entity.ToDoItems.Add(new ToDoItem
+                        var newToDoItem = new ToDoItem
                         {
                             Id = Guid.NewGuid(),
                             CreateDate = createModifyDate,
@@ -87,7 +90,9 @@ public class UpdateToDo : IEndpoint
                             Status = toDoItemDto.IsCompleted ? ToDoStatus.Completed : ToDoStatus.NotCompleted,
                             Description = toDoItemDto.Description,
                             SortOrder = index,
-                        });
+                        };
+                        entity.ToDoItems.Add(newToDoItem);
+                        databaseContext.Add(newToDoItem);
                     }
                     // edit
                     else
@@ -98,8 +103,6 @@ public class UpdateToDo : IEndpoint
                         toDoItem.Description = toDoItemDto.Description;
                         toDoItem.SortOrder = index;
                     }
-                    // delete
-                    entity.ToDoItems.RemoveAll(e => dto.ToDoItems.Any(d => d.Id == e.Id) == false);
                 }
             }
 
@@ -121,8 +124,8 @@ public class UpdateToDo : IEndpoint
             {
                 { Constants.ServerErrorGlobal, [Constants.ServerErrorGlobalMessage] }
             };
-            parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(entity?.Id ?? default));
-            parameters.Add(nameof(ToDoModalForm.Entity), entity ?? new());
+            parameters.Add(nameof(ToDoModalForm.ModalConfig), Modal.BuildModalConfig(dto.Id));
+            parameters.Add(nameof(ToDoModalForm.Model), dto);
             parameters.Add(nameof(ToDoModalForm.ServerErrors), serverErrors);
 
             httpContext.HtmxRetarget("closest form");

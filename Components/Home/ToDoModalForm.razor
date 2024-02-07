@@ -2,24 +2,26 @@
 @inject DatabaseContext DatabaseContext
 
 <HtmxForm>
-    <input type="hidden" name="@nameof(ToDoDto.Id)" value="@Entity.Id" />
+    <input type="hidden" name="@nameof(ToDoDto.Id)" value="@Model.Id" />
 
     <div class="modal-header">
-        <h1 id="@ModalConfig.TitleId" class="modal-title fs-5">@(Entity.Id == default ? "Create" : "Edit")</h1>
+        <h1 id="@ModalConfig.TitleId" class="modal-title fs-5">@(Model.Id == default ? "Create" : "Edit")</h1>
         <button type="button" data-bs-dismiss="modal" class="btn-close" aria-label="Close"></button>
     </div>
 
     <div class="modal-body">
         <div class="form-floating mb-3">
-            <input type="text" name="@nameof(ToDoDto.Title)" value="@Entity.Title" class="form-control" placeholder="title" autofocus-after-modal-shown />
+            <input type="text" name="@nameof(ToDoDto.Title)" value="@Model.Title" class="form-control" placeholder="title" autofocus-after-modal-shown />
             <label for="@nameof(ToDoDto.Title)" class="form-label">Title</label>
             <ServerValidationMessage For="@nameof(ToDoDto.Title)" ServerErrors="ServerErrors" />
         </div>
         
-        <ToDoItems Entity="Entity" ServerErrors="ServerErrors" />
+        <ToDoItems Model="Model" ServerErrors="ServerErrors" />
     </div>
 
     <div class="modal-footer">
+        <ServerValidationMessage For="@Constants.ServerErrorGlobal" ServerErrors="ServerErrors" />
+
         <div class="form-floating mb-3">
             <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">
                 Close
@@ -28,7 +30,6 @@
                 Save
             </button>
         </div>
-        <ServerValidationMessage For="@Constants.ServerErrorGlobal" ServerErrors="ServerErrors" />
     </div>
 </HtmxForm>
 
@@ -38,7 +39,7 @@
     public required ModalConfig ModalConfig { get; set; }
 
     [Parameter]
-    public ToDo Entity { get; set; } = new();
+    public ToDoDto Model { get; set; } = new();
 
     [Parameter]
     public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }

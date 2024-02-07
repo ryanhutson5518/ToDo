@@ -26,7 +26,7 @@
             var modalConfig = BuildModalConfig(toDo.Id);
 
             <div class="row">
-                <ToDoModal ModalConfig="modalConfig" Entity="toDo">
+                <ToDoModal ModalConfig="modalConfig" Model="toDo">
                     <ModalTrigger>
                         <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
                             Edit
@@ -39,7 +39,7 @@
 </div>
 
 @code {
-    private List<ToDo>? toDos = null;
+    private List<ToDoDto>? toDos = null;
 
     [Parameter]
     [EditorRequired]
@@ -49,11 +49,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        toDos = await DatabaseContext.ToDos
-            .AsNoTracking()
-            .Include(t => t.ToDoItems.OrderBy(i => i.SortOrder))
+        var entities = await DatabaseContext.ToDos
             .Where(t => t.UserId == UserId)
-            .OrderByDescending(t => t.CreateDate)
+            // Reaplace with dynamic sorting
+            .OrderByDescending(dto => dto.CreateDate)
+            .Select(t => new ToDo
+            {
+                Id = t.Id,
+                Title = t.Title,
+                ToDoItems = t.ToDoItems
+                    .OrderBy(i => i.SortOrder)
+                    .Select(i => new ToDoItem
+                    {
+                        Id = i.Id,
+                        Description = i.Description,
+                        Status = i.Status
+                    })
+                    .ToList()
+            })
             .ToListAsync();
+
+        toDos = entities.ConvertAll(Mapper.MapToDo);
     }
 }

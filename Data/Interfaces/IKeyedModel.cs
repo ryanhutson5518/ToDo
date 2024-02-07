@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApp.Data;
+﻿namespace WebApp.Data;
 
 public interface IKeyedModel
 {

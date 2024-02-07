@@ -4,7 +4,7 @@
     </ModalTrigger>
     <ModalContent>
         <div class="modal-content">
-            <ToDoModalForm ModalConfig="ModalConfig" Entity="Entity" />
+            <ToDoModalForm ModalConfig="ModalConfig" Model="Model" />
         </div>
     </ModalContent>
 </Modal>
@@ -19,5 +19,5 @@
     public required RenderFragment ModalTrigger { get; set; }
 
     [Parameter]
-    public ToDo Entity { get; set; } = new();
+    public ToDoDto Model { get; set; } = new();
 }
