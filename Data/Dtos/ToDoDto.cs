@@ -6,5 +6,7 @@ public class ToDoDto
 
     public string Title { get; set; } = string.Empty;
 
+    public DateTimeOffset CreateDate { get; set; }
+
     public List<ToDoItemDto> ToDoItems { get; set; } = [];
 }

@@ -10,9 +10,9 @@ using WebApp.Services;
 
 namespace WebApp.Endpoints;
 
-public class UpdateToDo : IEndpoint
+public class ToDoUpdate : IEndpoint
 {
-    public string Pattern => "/update-todo";
+    public string Pattern => Constants.ToDoUpdatePath;
 
     public HttpMethod HttpMethod => HttpMethod.Post;
 
@@ -20,7 +20,8 @@ public class UpdateToDo : IEndpoint
         HttpContext httpContext,
         [FromForm] ToDoDto dto,
         [FromServices] DatabaseContext databaseContext,
-        [FromServices] IValidator validator) =>
+        [FromServices] IValidator validator,
+        CancellationToken cancellationToken = default) =>
     {
         ToDo? entity = null;
         var parameters = new Dictionary<string, object?>();
@@ -29,7 +30,7 @@ public class UpdateToDo : IEndpoint
         {
             entity = dto.Id == default ? null : await databaseContext.ToDos
                 .Include(t => t.ToDoItems)
-                .FirstOrDefaultAsync(t => t.Id == dto.Id);
+                .FirstOrDefaultAsync(t => t.Id == dto.Id, cancellationToken);
 
             entity ??= new();
             entity.Title = dto.Title;
@@ -106,7 +107,7 @@ public class UpdateToDo : IEndpoint
                 }
             }
 
-            await databaseContext.SaveChangesAsync();
+            await databaseContext.SaveChangesAsync(cancellationToken);
 
             parameters.Add(nameof(ToDos.UserId), httpContext.GetRequiredUserId());
 

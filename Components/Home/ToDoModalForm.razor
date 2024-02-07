@@ -1,4 +1,4 @@
-﻿@using static WebApp.Endpoints.UpdateToDo
+﻿@using static WebApp.Endpoints.ToDoUpdate
 @inject DatabaseContext DatabaseContext
 
 <HtmxForm>
@@ -9,7 +9,7 @@
         <button type="button" data-bs-dismiss="modal" class="btn-close" aria-label="Close"></button>
     </div>
 
-    <div class="modal-body">
+    <div class="modal-body text-start">
         <div class="form-floating mb-3">
             <input type="text" name="@nameof(ToDoDto.Title)" value="@Model.Title" class="form-control" placeholder="title" autofocus-after-modal-shown />
             <label for="@nameof(ToDoDto.Title)" class="form-label">Title</label>
@@ -26,7 +26,7 @@
             <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">
                 Close
             </button>
-            <button @attributes="@(HtmxForm.DefaultHtmxAttributes("/update-todo"))" type="button" class="btn btn-primary" hx-hide-modals-before-swap>
+            <button @attributes="@(HtmxForm.DefaultHtmxAttributes(Constants.ToDoUpdatePath))" type="button" class="btn btn-primary" hx-hide-modals-before-swap>
                 Save
             </button>
         </div>

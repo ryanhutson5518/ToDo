@@ -17,24 +17,76 @@
 
     @if (toDos == null)
     {
-        // Good spinner code <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
+        <strong role="status">Loading... <span class="spinner-border" aria-hidden="true"></span></strong>
     }
     else if (toDos.Any())
     {
-        foreach (var toDo in toDos)
-        {
-            var modalConfig = BuildModalConfig(toDo.Id);
+        int skipCount = 0;
+        int takeCount = 3;
+        bool hasMore = true;
 
-            <div class="row">
-                <ToDoModal ModalConfig="modalConfig" Model="toDo">
-                    <ModalTrigger>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
-                            Edit
-                        </button>
-                    </ModalTrigger>
-                </ToDoModal>
+        while (hasMore)
+        {
+            var batch = toDos.Skip(skipCount).Take(takeCount);
+
+            <div class="row mb-4">
+                @foreach (var toDo in batch)
+                {
+                    var modalConfig = Modal.BuildModalConfig(toDo.Id);
+
+                    <div class="col-xl-4 col-lg-6 col-md-12">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h5>@toDo.Title</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    @foreach (var toDoItem in toDo.ToDoItems)
+                                    {
+                                        var checkBoxId = $"checkBox_{toDoItem.Id}";
+
+                                        <li class="list-group-item">
+                                            <input type="checkbox" class="form-check-input me-1" value="" id="@checkBoxId">
+                                            <label class="stretched-link" for="@checkBoxId">@toDoItem.Description</label>
+                                        </li>
+                                    }
+                                </ul>
+
+                                <div class="container mt-3">
+                                    <div class="row">
+                                        <div class="col-6 text-end">
+                                            <ToDoModal ModalConfig="modalConfig" Model="toDo">
+                                                <ModalTrigger>
+                                                    <button type="button" data-bs-toggle="modal" data-bs-target="#@modalConfig.Id" class="btn btn-primary">
+                                                        <SvgPencilSquare />
+                                                    </button>
+                                                </ModalTrigger>
+                                            </ToDoModal>
+                                        </div>
+                                        
+                                        <div class="col-6 text-start">
+                                            <button type="button" class="btn btn-danger">
+                                                <SvgTrash3 />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center text-body-secondary">
+                                Created on: @toDo.CreateDate.ToString("MMMM/dd/yyyy h:mm tt")
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
+
+            skipCount += takeCount;
+            hasMore = toDos.Skip(skipCount).Any();
         }
+    }
+    else
+    {
+        <p>Nothing to do...</p>
     }
 </div>
 
@@ -49,26 +101,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var entities = await DatabaseContext.ToDos
+        toDos = await DatabaseContext.ToDos
             .Where(t => t.UserId == UserId)
             // Reaplace with dynamic sorting
             .OrderByDescending(dto => dto.CreateDate)
-            .Select(t => new ToDo
+            .Select(t => new ToDoDto
             {
                 Id = t.Id,
                 Title = t.Title,
+                CreateDate = t.CreateDate,
                 ToDoItems = t.ToDoItems
                     .OrderBy(i => i.SortOrder)
-                    .Select(i => new ToDoItem
+                    .Select(i => new ToDoItemDto
                     {
                         Id = i.Id,
                         Description = i.Description,
-                        Status = i.Status
+                        IsCompleted = i.Status == ToDoStatus.Completed,
                     })
                     .ToList()
             })
             .ToListAsync();
-
-        toDos = entities.ConvertAll(Mapper.MapToDo);
     }
 }
