@@ -27,7 +27,7 @@ jobs:
       run: |
         dotnet new tool-manifest
         dotnet tool install --global dotnet-ef
-        dotnet ef database update --project WebApp --environment Production --connection ${{ secrets.SQL_CONNECTION_STRING }}
+        dotnet ef database update -- --environment Production -p WebApp --connection ${{ secrets.SQL_CONNECTION_STRING }}
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
