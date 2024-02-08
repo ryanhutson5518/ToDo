@@ -17,4 +17,6 @@ public static class Constants
     public const string ToDoItemAddRowPath = "/todoitem-add-row";
 
     public const string ToDoItemDeleteRowPath = "/todoitem-delete-row";
+
+    public const string ToDoItemUpdateStatusPath = "/todoitem-update-status";
 }

@@ -29,12 +29,12 @@
         {
             var batch = toDos.Skip(skipCount).Take(takeCount);
 
-            <div class="row mb-4">
+            <div class="row justify-content-center">
                 @foreach (var toDo in batch)
                 {
                     var modalConfig = Modal.BuildModalConfig(toDo.Id);
 
-                    <div class="col-xl-4 col-lg-6 col-md-12">
+                    <div class="col-lg-8 col-md-10 col-sm-12 mb-3">
                         <div class="card">
                             <div class="card-header text-center">
                                 <h5>@toDo.Title</h5>
@@ -43,12 +43,11 @@
                                 <ul class="list-group">
                                     @foreach (var toDoItem in toDo.ToDoItems)
                                     {
-                                        var checkBoxId = $"checkBox_{toDoItem.Id}";
-
-                                        <li class="list-group-item">
-                                            <input type="checkbox" class="form-check-input me-1" value="" id="@checkBoxId">
-                                            <label class="stretched-link" for="@checkBoxId">@toDoItem.Description</label>
-                                        </li>
+                                        <ToDoItemListItem
+                                            ToDoItemId="toDoItem.Id"
+                                            Description="@toDoItem.Description"
+                                            IsCompleted="toDoItem.IsCompleted"
+                                        />
                                     }
                                 </ul>
 

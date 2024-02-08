@@ -1,0 +1,61 @@
+﻿@using WebApp.Endpoints
+
+<HtmxForm>
+    <li class="list-group-item">
+        <ServerValidationMessage For="@Constants.ServerErrorGlobal" ServerErrors="ServerErrors" />
+
+        <input type="hidden" name="@nameof(ToDoItemUpdateStatus.Dto.ToDoItemId)" value="@ToDoItemId" />
+        <input type="hidden" name="@nameof(ToDoItemUpdateStatus.Dto.Description)" value="@Description" />
+        <input type="hidden" name="@nameof(ToDoItemUpdateStatus.Dto.IsCompleted)" value="@IsCompleted.ToString()" />
+
+        <input
+            @attributes="checkboxAdditionalAttributes"
+            type="checkbox"
+            class="form-check-input"
+            id="@checkBoxId"
+        />
+        <label class="stretched-link" for="@checkBoxId">@Description</label>
+    </li>
+</HtmxForm>
+
+@code {
+    private string checkBoxId = string.Empty;
+
+    private Dictionary<string, object> checkboxAdditionalAttributes = new();
+
+    [Parameter]
+    [EditorRequired]
+    public required Guid ToDoItemId { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required string Description { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public required bool IsCompleted { get; set; }
+
+    [Parameter]
+    public Dictionary<string, HashSet<string>>? ServerErrors { get; set; }
+
+    protected override void OnInitialized()
+    {
+        checkBoxId = $"checkBox_{ToDoItemId}";
+
+        checkboxAdditionalAttributes = new Dictionary<string, object>
+        {
+            { "hx-post", $"{Constants.ToDoItemUpdateStatusPath}" },
+            { "hx-trigger", "click" },
+            { "hx-swap", "outerHTML" },
+        };
+        if (IsCompleted)
+        {
+            checkboxAdditionalAttributes.Add("value", "true");
+            checkboxAdditionalAttributes.Add("checked", "");
+        }
+        else
+        {
+            checkboxAdditionalAttributes.Add("value", "true");
+        }
+    }
+}

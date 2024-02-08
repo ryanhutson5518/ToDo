@@ -10,12 +10,12 @@
     [EditorRequired]
     public required RenderFragment ChildContent { get; set; } = default!;
 
-    public static IReadOnlyDictionary<string, object> DefaultHtmxAttributes(string postUrl) => new ReadOnlyDictionary<string, object>(new Dictionary<string, object>
+    public static Dictionary<string, object> DefaultHtmxAttributes(string postUrl) => new Dictionary<string, object>
     {
         // hx-target should not be used as default. Prefer HX-RETARGET response header https://htmx.org/docs/#response-headers
         { "hx-post", postUrl },
         { "hx-trigger", "click" },
         { "hx-swap", "outerHTML" },
         { "hx-disabled-elt", "this" },
-    });
+    };
 }
