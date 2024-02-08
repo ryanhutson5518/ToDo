@@ -26,7 +26,7 @@ jobs:
     - name: Bundle Database Migrations
       run: |
         dotnet 
-        dotnet ef migrations bundle --project WebApp --force --no-build
+        dotnet ef migrations bundle --project WebApp --force
     - name: Update Database
       run: ./efbundle.exe --connection ${{ secrets.SQL_CONNECTION_STRING }}
     - name: Test
