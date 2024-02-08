@@ -24,8 +24,8 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Update Database
       run: |
+        dotnet new tool-manifest
         dotnet tool install --global dotnet-ef
-        dotnet tool restore
         dotnet ef database update -p WebApp
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
