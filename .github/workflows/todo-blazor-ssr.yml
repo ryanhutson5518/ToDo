@@ -22,10 +22,11 @@ jobs:
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Update Database
+    - name: Bundle Database Migrations
       run: |
         dotnet ef migrations bundle --project WebApp --force --no-build
-        .\efbundle.exe --connection ${{ secrets.SQL_CONNECTION_STRING }}
+    - name: Update Database
+      run: .\efbundle.exe --connection ${{ secrets.SQL_CONNECTION_STRING }}
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
