@@ -23,12 +23,12 @@ jobs:
     - name: Build
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Update Database
+      with:
+        connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
       run: |
         dotnet new tool-manifest
         dotnet tool install --global dotnet-ef
         dotnet ef database update -p WebApp
-      with:
-        connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
