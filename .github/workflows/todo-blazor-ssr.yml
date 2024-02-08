@@ -26,9 +26,9 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
       #https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#bundles
     - name: Bundle Database Migrations
-      run: dotnet ef migrations bundle --project WebApp --output ./efbundle.exe --force --no-build
+      run: dotnet ef migrations bundle --project WebApp --output WebApp/efbundle.exe --force --no-build
     - name: Update Database
-      run: ./efbundle.exe --connection '${{ secrets.SQL_CONNECTION_STRING }}' --verbose
+      run: WebApp/efbundle.exe --connection '${{ secrets.SQL_CONNECTION_STRING }}'
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
     - name: Publish
