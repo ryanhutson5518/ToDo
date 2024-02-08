@@ -24,7 +24,7 @@ jobs:
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
     - name: Update Database
       run: |
-        dotnet ef migrations bundle --force
+        dotnet ef migrations bundle --project WebApp --force --no-build
         .\efbundle.exe --connection ${{ secrets.SQL_CONNECTION_STRING }}
     - name: Test
       run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
